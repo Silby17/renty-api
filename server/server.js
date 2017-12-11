@@ -5,10 +5,15 @@ var {mongoose} = require('./db/mongoose');
 var {User} = require('./models/user');
 var {Listing} = require('./models/listing');
 var {authenticate} = require('./middleware/authenticate');
-mongoose.Promise = require('bluebird');
+var multer = require('multer');
+var multerS3 = require('multer-s3');
+var AWS = require('aws-sdk');
 var app = express();
-app.use(bodyParser.json());
+var {upload} = require('./storage/S3Storage');
+var {AWS} = require('./storage/S3Storage');
 
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
 
 app.post('/users', (req, res) => {
@@ -24,12 +29,15 @@ app.post('/users', (req, res) => {
     })
 });
 
-app.post('/listing', authenticate, (req, res) => {
+app.post('/listing', upload.single('myFile'), authenticate, (req, res, next) => {
+    var fileLocation = req.file.location;
     var body = _.pick(req.body, ['title', 'category', 'description',
     'price']);
     var listing = new Listing(body);
     listing._creator =  req.user._id;
+    listing.imageUrl = fileLocation;
     listing.save().then((doc) => {
+        console.log('Created Listing: ', doc);
         res.send(doc);
     }, (err) => {
         res.status(400).send(e);
