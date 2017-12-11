@@ -1,11 +1,14 @@
 const _ = require('lodash');
 var express = require('express');
 var bodyParser = require('body-parser');
+var {mongoose} = require('./db/mongoose');
 var {User} = require('./models/user');
+var {Listing} = require('./models/listing');
 var {authenticate} = require('./middleware/authenticate');
-
+mongoose.Promise = require('bluebird');
 var app = express();
 app.use(bodyParser.json());
+
 
 
 app.post('/users', (req, res) => {
@@ -16,8 +19,21 @@ app.post('/users', (req, res) => {
     }).then((token) => {
         res.header('x-auth', token).send(user);
     }).catch((e) => {
+        console.log(e);
         res.status(400).send(e);
     })
+});
+
+app.post('/listing', authenticate, (req, res) => {
+    var body = _.pick(req.body, ['title', 'category', 'description',
+    'price']);
+    var listing = new Listing(body);
+    listing._creator =  req.user._id;
+    listing.save().then((doc) => {
+        res.send(doc);
+    }, (err) => {
+        res.status(400).send(e);
+    });
 });
 
 
@@ -47,6 +63,8 @@ app.delete('/users/logout', authenticate, (req, res) => {
         res.status(400).send();
     });
 });
+
+
 
 
 app.listen(3000, () => {
