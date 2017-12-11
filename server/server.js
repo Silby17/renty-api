@@ -1,31 +1,30 @@
 const _ = require('lodash');
 var express = require('express');
 var bodyParser = require('body-parser');
-var {mongoose} = require('./db/mongoose');
 var {User} = require('./models/user');
 var {Listing} = require('./models/listing');
 var {authenticate} = require('./middleware/authenticate');
-var multer = require('multer');
-var multerS3 = require('multer-s3');
-var AWS = require('aws-sdk');
 var app = express();
 var {upload} = require('./storage/S3Storage');
-var {AWS} = require('./storage/S3Storage');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 
 app.post('/users', (req, res) => {
-    var body = _.pick(req.body, ['email', 'password']);
+    var body = _.pick(req.body, ['email', 'password', 'firstName', 'surname']);
     var user = new User(body);
     user.save().then(() => {
         return user.generateAuthToken();
     }).then((token) => {
         res.header('x-auth', token).send(user);
     }).catch((e) => {
-        console.log(e);
-        res.status(400).send(e);
+        if(e.code === 11000){
+            res.status(409).send({"message": "User Already exists"});
+        }
+        else {
+            res.status(400).send(e);
+        }
     })
 });
 
@@ -71,8 +70,6 @@ app.delete('/users/logout', authenticate, (req, res) => {
         res.status(400).send();
     });
 });
-
-
 
 
 app.listen(3000, () => {
