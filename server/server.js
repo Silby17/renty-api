@@ -1,12 +1,14 @@
 const _ = require('lodash');
 var express = require('express');
 var bodyParser = require('body-parser');
+var {ObjectID}  = require('mongodb');
 var {mongoose} = require('./db/mongoose'); //Needed to start connection
 var {User} = require('./models/user');
 var {Listing} = require('./models/listing');
 var {authenticate} = require('./middleware/authenticate');
 var app = express();
 var {upload} = require('./storage/S3Storage');
+
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -87,6 +89,23 @@ app.get('/all/listings', (req, res) => {
     }, (err) => {
         res.status(400).send(err);
     });
+});
+
+// GET /listings/id
+app.get('/listings/:id', (req, res) => {
+    var id = req.params.id;
+    if(!ObjectID.isValid(id)){
+        return res.status(400).send();
+    }
+    Listing.findById(id).then((listing) => {
+        if(!listing){
+            return res.status(404).send();
+        }
+        res.send(listing);
+    }).catch((e) => {
+        res.status(400).send();
+    });
+
 });
 
 
