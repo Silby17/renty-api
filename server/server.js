@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-    res.send({message: "Mundo API Live!"})
+    res.send({message: "The Mundo API is Live!"})
 });
 
 
