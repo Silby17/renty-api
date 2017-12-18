@@ -9,6 +9,7 @@ var {authenticate} = require('./middleware/authenticate');
 var app = express();
 var {upload} = require('./storage/S3Storage');
 
+const port = process.env.PORT || 3000;
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -109,6 +110,6 @@ app.get('/listings/:id', (req, res) => {
 });
 
 
-app.listen(3000, () => {
-    console.log('Started server on Port 3000');
+app.listen(port, () => {
+    console.log(`Started server on Port ${port}`);
 });
