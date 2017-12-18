@@ -14,6 +14,10 @@ const port = process.env.PORT || 3000;
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
+app.get('/', (req, res) => {
+    res.send({message: "welcome!"})
+});
+
 
 app.post('/users', (req, res) => {
     var body = _.pick(req.body, ['email', 'password', 'firstName', 'surname']);
