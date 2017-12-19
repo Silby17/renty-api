@@ -49,6 +49,7 @@ app.post('/users/login', (req, res) => {
     User.findByCredentials(body.email, body.password).then((user) => {
         user.generateAuthToken().then((token) => {
             logger.log('info', 'User: ', user.email, ' has logged in');
+            console.log('User: ', user.email, ' has logged in');
             res.header('x-auth', token).send(user);
         });
     }).catch((e) => {
