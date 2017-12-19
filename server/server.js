@@ -8,6 +8,7 @@ var {Listing} = require('./models/listing');
 var {authenticate} = require('./middleware/authenticate');
 var app = express();
 var {upload} = require('./storage/S3Storage');
+var {logger} = require('./logger/logger');
 
 const port = process.env.PORT || 3000;
 
@@ -47,6 +48,7 @@ app.post('/users/login', (req, res) => {
 
     User.findByCredentials(body.email, body.password).then((user) => {
         user.generateAuthToken().then((token) => {
+            logger.log('info', 'User: ', user.email, ' has logged in');
             res.header('x-auth', token).send(user);
         });
     }).catch((e) => {
