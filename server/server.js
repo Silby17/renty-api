@@ -50,8 +50,7 @@ app.post('/users/login', (req, res) => {
 
     User.findByCredentials(body.email, body.password).then((user) => {
         user.generateAuthToken().then((token) => {
-            console.log('User: ', user.email, ' has logged in');
-            hLogger.info('User: ', user.email, ' has logged in');
+            hLogger.info('User has logged in', {user: user.email});
             res.header('x-auth', token).send({
                 _id: user._id,
                 email: user.email,
