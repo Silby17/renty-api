@@ -27,7 +27,12 @@ app.post('/users', (req, res) => {
         return user.generateAuthToken();
     }).then((token) => {
         hLogger.info('New User created', {user: user.email});
-        res.header('x-auth', token).send(user);
+        res.header('x-auth', token).send({
+            _id: user._id,
+            email: user.email,
+            firstName: user.firstName,
+            surname: user.surname
+        });
     }).catch((e) => {
         if(e.code === 11000){
             hLogger.error('User already exists', {user: user.email});
