@@ -9,6 +9,7 @@ var {authenticate} = require('./middleware/authenticate');
 var app = express();
 var {upload} = require('./storage/S3Storage');
 var {logger} = require('./logger/logger');
+const hLogger = require('heroku-logger');
 
 const port = process.env.PORT || 3000;
 
@@ -45,12 +46,18 @@ app.get('/users/me', authenticate, (req, res) => {
 // Login Post
 app.post('/users/login', (req, res) => {
     var body = _.pick(req.body, ['email', 'password']);
+    console.log(body.email, ' - is trying to log in');
 
     User.findByCredentials(body.email, body.password).then((user) => {
         user.generateAuthToken().then((token) => {
-            logger.log('info', 'User: ', user.email, ' has logged in');
             console.log('User: ', user.email, ' has logged in');
-            res.header('x-auth', token).send(user);
+            hLogger.info('User: ', user.email, ' has logged in');
+            res.header('x-auth', token).send({
+                _id: user._id,
+                email: user.email,
+                firstName: user.firstName,
+                surname: user.surname
+            });
         });
     }).catch((e) => {
         res.status(400).send({message: 'wrong'});

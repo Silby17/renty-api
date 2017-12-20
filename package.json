@@ -9,6 +9,7 @@
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
+    "heroku-logger": "^0.3.0",
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",
     "mongodb": "^3.0.0-rc0",
