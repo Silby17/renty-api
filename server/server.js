@@ -8,7 +8,6 @@ var {Listing} = require('./models/listing');
 var {authenticate} = require('./middleware/authenticate');
 var app = express();
 var {upload} = require('./storage/S3Storage');
-var {logger} = require('./logger/logger');
 const hLogger = require('heroku-logger');
 
 const port = process.env.PORT || 3000;
@@ -27,9 +26,11 @@ app.post('/users', (req, res) => {
     user.save().then(() => {
         return user.generateAuthToken();
     }).then((token) => {
+        hLogger.info('New User created', {user: user.email});
         res.header('x-auth', token).send(user);
     }).catch((e) => {
         if(e.code === 11000){
+            hLogger.error('User already exists', {user: user.email});
             res.status(409).send({"message": "User Already exists"});
         }
         else {
