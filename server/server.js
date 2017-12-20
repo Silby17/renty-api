@@ -46,7 +46,7 @@ app.get('/users/me', authenticate, (req, res) => {
 // Login Post
 app.post('/users/login', (req, res) => {
     var body = _.pick(req.body, ['email', 'password']);
-    console.log(body.email, ' - is trying to log in');
+    console.log('User: - ', body.email, ' - is trying to log in');
 
     User.findByCredentials(body.email, body.password).then((user) => {
         user.generateAuthToken().then((token) => {
@@ -59,7 +59,8 @@ app.post('/users/login', (req, res) => {
             });
         });
     }).catch((e) => {
-        res.status(400).send({message: 'wrong'});
+        hLogger.error('Login Failed', {user: body.email});
+        res.status(400).send({message: 'Login Failed'});
     });
 });
 
