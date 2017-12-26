@@ -86,7 +86,7 @@ app.post('/listing', upload.single('myFile'), authenticate, (req, res, next) => 
         'price']);
     console.log('User trying to upload');
     var listing = new Listing(body);
-    listing._creator =  req.user._id;
+    //listing._creator =  req.user._id;
     listing.imageUrl = fileLocation;
     listing.save().then((doc) => {
         res.send(doc);
