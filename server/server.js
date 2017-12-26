@@ -84,15 +84,15 @@ app.post('/listing', upload.single('myFile'), authenticate, (req, res, next) => 
     var fileLocation = req.file.location;
     var body = _.pick(req.body, ['title', 'category', 'description',
         'price']);
-    console.log('User trying to upload');
     var listing = new Listing(body);
-    //listing._creator =  req.user._id;
+    listing._creator =  req.user._id;
     listing.imageUrl = fileLocation;
     listing.save().then((doc) => {
         res.send(doc);
     }, (err) => {
         res.status(400).send(e);
     });
+    console.log("Uncaught server Error");
 });
 
 app.get('/listings', authenticate, (req, res) => {
