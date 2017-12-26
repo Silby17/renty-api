@@ -92,7 +92,6 @@ app.post('/listing', upload.single('myFile'), authenticate, (req, res, next) => 
     }, (err) => {
         res.status(400).send(e);
     });
-    console.log("Uncaught server Error");
 });
 
 app.get('/listings', authenticate, (req, res) => {
