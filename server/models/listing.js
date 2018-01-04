@@ -14,32 +14,25 @@ var ListingSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    price: {
+    dailyPrice: {
+        required: true,
+        type: Number
+    },
+    weeklyPrice: {
+        required: true,
+        type: Number
+    },
+    monthlyPrice: {
         required: true,
         type: Number
     },
     imageUrl: {
-        type: String
+        type: [String]
     },
     _creator: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
     }
-    /*prices: [{
-        dailyPrice: {
-            required: true,
-            type: Number
-        },
-        weeklyPrice: {
-            required: true,
-            type: Number
-        },
-        monthlyPrice: {
-            required: true,
-            type: Number
-        }
-    }],*/
-
 });
 
 var Listing = mongoose.model('Listing', ListingSchema);
