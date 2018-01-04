@@ -8,8 +8,8 @@ var {Listing} = require('./models/listing');
 var {authenticate} = require('./middleware/authenticate');
 var app = express();
 var {upload} = require('./storage/S3Storage');
-const hLogger = require('heroku-logger');
 
+const hLogger = require('heroku-logger');
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -86,12 +86,32 @@ app.post('/listing', upload.single('myFile'), authenticate, (req, res, next) => 
         'price']);
     var listing = new Listing(body);
     listing._creator =  req.user._id;
-    listing.imageUrl = fileLocation;
+    listing.imageUrl.push(fileLocation);
     listing.save().then((doc) => {
+        hLogger.info('Created new listing', {user: user.email});
         res.send(doc);
     }, (err) => {
         res.status(400).send(e);
     });
+});
+
+app.post('/listing/add/image', upload.single('image'), authenticate, (req, res) => {
+    var fileLocation = req.file.location;
+    var body = _.pick(req.body, ['listing_id']);
+    Listing.find({
+        _id: body.listing_id
+    }).then((listings) => {
+        listings[0].imageUrl.push(fileLocation);
+        listings[0].save().then((doc) => {
+            hLogger.info('Added image to listing', {listing: listing_id});
+            res.send(doc);
+        }, (err) => {
+            res.status(400).send(err);
+        });
+    }, (err) => {
+        res.status(404).send(err);
+    });
+
 });
 
 app.get('/listings', authenticate, (req, res) => {
