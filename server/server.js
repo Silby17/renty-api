@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 var {ObjectID}  = require('mongodb');
 var {mongoose} = require('./db/mongoose'); //Needed to start connection
 var {User} = require('./models/user');
+var {Category} = require('./models/category');
 var {Listing} = require('./models/listing');
 var {authenticate} = require('./middleware/authenticate');
 var app = express();
@@ -146,7 +147,25 @@ app.get('/listings/:id', (req, res) => {
     }).catch((e) => {
         res.status(400).send();
     });
+});
 
+app.post('/category', (req, res) => {
+    var body = _.pick(req.body, ['name']);
+    var category = new Category(body);
+    category.save().then(() => {
+        hLogger.info('Added new Category', body);
+        res.status(200).send();
+    }).catch((e) => {
+        res.status(400).send(e);
+    });
+});
+
+app.get('/categories', (req, res) => {
+    Category.find().then((categories) => {
+        res.send({categories});
+    }, (err) => {
+        res.status(400).send(err);
+    });
 });
 
 
