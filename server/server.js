@@ -153,9 +153,9 @@ app.get('/listings/:category/category', (req, res) => {
     var category = req.params.category;
     Listing.find({'category': category}).then((listings) => {
         if(!listings){
-            return res.status(404).send({listings: listings});
+            return res.status(404).send();
         }
-        res.send(listings);
+        res.send({listings: listings});
     }).catch((err) =>{
         res.state(400).send(err);
     })
