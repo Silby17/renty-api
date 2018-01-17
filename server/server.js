@@ -84,15 +84,15 @@ app.delete('/users/logout', authenticate, (req, res) => {
 app.post('/listing', upload.single('myFile'), authenticate, (req, res, next) => {
     var fileLocation = req.file.location;
     var body = _.pick(req.body, ['title', 'category', 'description',
-        'price']);
+        'dailyPrice', 'monthlyPrice', 'weeklyPrice']);
     var listing = new Listing(body);
     listing._creator =  req.user._id;
     listing.imageUrl.push(fileLocation);
     listing.save().then((doc) => {
-        hLogger.info('Created new listing', {user: user.email});
+        hLogger.info('Created new listing', {listing: doc.title});
         res.send(doc);
     }, (err) => {
-        res.status(400).send(e);
+        res.status(400).send(err);
     });
 });
 
@@ -145,8 +145,20 @@ app.get('/listings/:id', (req, res) => {
         }
         res.send(listing);
     }).catch((e) => {
-        res.status(400).send();
+        res.status(400).send(e);
     });
+});
+
+app.get('/listings/:category/category', (req, res) => {
+    var category = req.params.category;
+    Listing.find({'category': category}).then((listings) => {
+        if(!listings){
+            return res.status(404).send();
+        }
+        res.send(listings);
+    }).catch((err) =>{
+        res.state(400).send(err);
+    })
 });
 
 app.post('/category', (req, res) => {
