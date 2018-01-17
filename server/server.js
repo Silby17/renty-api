@@ -1,14 +1,14 @@
 const _ = require('lodash');
-var express = require('express');
-var bodyParser = require('body-parser');
-var {ObjectID}  = require('mongodb');
-var {mongoose} = require('./db/mongoose'); //Needed to start connection
-var {User} = require('./models/user');
-var {Category} = require('./models/category');
-var {Listing} = require('./models/listing');
-var {authenticate} = require('./middleware/authenticate');
-var app = express();
-var {upload} = require('./storage/S3Storage');
+const express = require('express');
+const bodyParser = require('body-parser');
+const {ObjectID}  = require('mongodb');
+const {mongoose} = require('./db/mongoose'); //Needed to start connection
+const {User} = require('./models/user');
+const {Category} = require('./models/category');
+const {Listing} = require('./models/listing');
+const {authenticate} = require('./middleware/authenticate');
+const app = express();
+const {upload} = require('./storage/S3Storage');
 
 const hLogger = require('heroku-logger');
 const port = process.env.PORT || 3000;
@@ -22,8 +22,8 @@ app.get('/', (req, res) => {
 
 
 app.post('/users', (req, res) => {
-    var body = _.pick(req.body, ['email', 'password', 'firstName', 'surname']);
-    var user = new User(body);
+    let body = _.pick(req.body, ['email', 'password', 'firstName', 'surname']);
+    let user = new User(body);
     user.save().then(() => {
         return user.generateAuthToken();
     }).then((token) => {
@@ -52,7 +52,7 @@ app.get('/users/me', authenticate, (req, res) => {
 
 // Login Post
 app.post('/users/login', (req, res) => {
-    var body = _.pick(req.body, ['email', 'password']);
+    let body = _.pick(req.body, ['email', 'password']);
     console.log('User: - ', body.email, ' - is trying to log in');
 
     User.findByCredentials(body.email, body.password).then((user) => {
@@ -82,10 +82,10 @@ app.delete('/users/logout', authenticate, (req, res) => {
 
 
 app.post('/listing', upload.single('myFile'), authenticate, (req, res, next) => {
-    var fileLocation = req.file.location;
-    var body = _.pick(req.body, ['title', 'category', 'description',
+    let fileLocation = req.file.location;
+    let body = _.pick(req.body, ['title', 'category', 'description',
         'dailyPrice', 'monthlyPrice', 'weeklyPrice']);
-    var listing = new Listing(body);
+    let listing = new Listing(body);
     listing._creator =  req.user._id;
     listing.imageUrl.push(fileLocation);
     listing.save().then((doc) => {
@@ -97,8 +97,8 @@ app.post('/listing', upload.single('myFile'), authenticate, (req, res, next) => 
 });
 
 app.post('/listing/add/image', upload.single('image'), authenticate, (req, res) => {
-    var fileLocation = req.file.location;
-    var body = _.pick(req.body, ['listing_id']);
+    let fileLocation = req.file.location;
+    let body = _.pick(req.body, ['listing_id']);
     Listing.find({
         _id: body.listing_id
     }).then((listings) => {
@@ -135,7 +135,7 @@ app.get('/all/listings', (req, res) => {
 
 // GET /listings/id
 app.get('/listings/:id', (req, res) => {
-    var id = req.params.id;
+    let id = req.params.id;
     if(!ObjectID.isValid(id)){
         return res.status(400).send();
     }
@@ -150,7 +150,7 @@ app.get('/listings/:id', (req, res) => {
 });
 
 app.get('/listings/:category/category', (req, res) => {
-    var category = req.params.category;
+    let category = req.params.category;
     Listing.find({'category': category}).then((listings) => {
         if(!listings){
             return res.status(404).send();
@@ -162,8 +162,8 @@ app.get('/listings/:category/category', (req, res) => {
 });
 
 app.post('/category', (req, res) => {
-    var body = _.pick(req.body, ['name']);
-    var category = new Category(body);
+    let body = _.pick(req.body, ['name']);
+    let category = new Category(body);
     category.save().then(() => {
         hLogger.info('Added new Category', body);
         res.status(200).send();
