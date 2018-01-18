@@ -181,6 +181,31 @@ app.get('/categories', (req, res) => {
 });
 
 
+app.get('/categories/listings/', (req, res) => {
+    let allCategories = [];
+    Category.find({}).then(function(categories) {
+        allCategories = categories;
+        let listings = [];
+        categories.forEach(function(c) {
+            listings.push(Listing.find({'category': c.name}));
+        });
+        return Promise.all(listings);
+
+    }).then(function(listOfCategories){
+        let result = [];
+        for(let i = 0; i < listOfCategories.length; i++){
+            result.push({
+                category_name : allCategories[i].name,
+                listings : listOfCategories[i]
+            });
+        }
+        res.send({category_listings: result});
+    }).catch(function(error) {
+        res.status(400).send(error);
+    });
+});
+
+
 app.listen(port, () => {
     console.log(`Started server on Port ${port}`);
 });
