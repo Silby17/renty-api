@@ -32,6 +32,9 @@ var ListingSchema = mongoose.Schema({
     _creator: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
+    },
+    active: {
+        type: Boolean
     }
 });
 
