@@ -119,7 +119,7 @@ app.get('/listings', authenticate, (req, res) => {
     Listing.find({
         _creator: req.user._id
     }).then((listings) => {
-        res.send(listings);
+        res.send({listings: listings});
     }, (err) => {
         res.status(400).send(err);
     });
