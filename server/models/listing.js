@@ -35,6 +35,10 @@ var ListingSchema = mongoose.Schema({
     },
     active: {
         type: Boolean
+    },
+    location: {
+        type: String,
+        required: true
     }
 });
 
