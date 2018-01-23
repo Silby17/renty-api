@@ -14,15 +14,15 @@ var ListingSchema = mongoose.Schema({
         type: String,
         required: true,
     },
+    hourlyPrice: {
+        required: true,
+        type: Number
+    },
     dailyPrice: {
         required: true,
         type: Number
     },
     weeklyPrice: {
-        required: true,
-        type: Number
-    },
-    monthlyPrice: {
         required: true,
         type: Number
     },
