@@ -84,7 +84,7 @@ app.delete('/users/logout', authenticate, (req, res) => {
 app.post('/listing', upload.single('myFile'), authenticate, (req, res, next) => {
     let fileLocation = req.file.location;
     let body = _.pick(req.body, ['title', 'category', 'description',
-        'dailyPrice', 'monthlyPrice', 'weeklyPrice']);
+        'dailyPrice', 'hourlyPrice', 'weeklyPrice']);
     let listing = new Listing(body);
     listing._creator =  req.user._id;
     listing.imageUrl.push(fileLocation);
